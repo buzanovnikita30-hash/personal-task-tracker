@@ -3,336 +3,488 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Personal Task Tracker</title>
+  <title>Task Tracker</title>
   <style>
     :root {
-      --bg: #f1f5f9;
-      --card: #ffffff;
-      --text: #0f172a;
-      --muted: #64748b;
-      --accent: #2563eb;
-      --line: #e2e8f0;
-      --ok: #16a34a;
-      --warn: #ca8a04;
-      --danger: #dc2626;
+      --bg: #100a3b;
+      --bg2: #1d0f56;
+      --card: #1b1450;
+      --card2: #281e6a;
+      --text: #f7f1ff;
+      --muted: #c8c1e6;
+      --line: #3f338d;
+      --gold: #f0b668;
+      --gold-soft: #3f2b1a;
+      --danger: #ff7f9f;
+      --ok: #64e59d;
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-      background: var(--bg);
+      background: radial-gradient(circle at 20% 0%, #1e1262 0%, var(--bg) 55%) fixed;
       color: var(--text);
-      line-height: 1.5;
     }
-    .wrap {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 16px;
-    }
-    .card {
-      background: var(--card);
+    .wrap { max-width: 1400px; margin: 0 auto; padding: 16px; }
+    .panel {
       border: 1px solid var(--line);
       border-radius: 14px;
-      padding: 12px;
+      background: linear-gradient(180deg, rgba(36, 27, 97, 0.95), rgba(26, 20, 80, 0.95));
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.24);
     }
     .topbar {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 10px;
+      display: grid; gap: 12px; grid-template-columns: 1fr;
       margin-bottom: 12px;
     }
-    @media (min-width: 1000px) {
+    @media (min-width: 960px) {
       .topbar { grid-template-columns: 1.5fr 1fr; }
     }
-    .brand {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 8px;
+    .header { padding: 14px; }
+    .title {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 10px; margin-bottom: 10px;
     }
-    .brand h1 {
-      margin: 0;
-      font-size: 20px;
-    }
-    .stats {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
+    h1 { margin: 0; font-size: 26px; color: var(--gold); letter-spacing: 0.2px; }
+    .stats { display: flex; gap: 8px; flex-wrap: wrap; }
     .chip {
-      font-size: 12px;
-      padding: 5px 10px;
-      border-radius: 999px;
       border: 1px solid var(--line);
-      background: #fff;
+      background: rgba(18, 12, 62, 0.8);
       color: var(--muted);
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 12px;
     }
-    .chip strong { color: var(--text); }
-    .quick {
-      display: flex;
-      gap: 8px;
-      margin-top: 8px;
+    .chip strong { color: #fff; }
+    .quick { display: grid; grid-template-columns: 1fr auto auto auto; gap: 8px; }
+    @media (max-width: 760px) {
+      .quick { grid-template-columns: 1fr 1fr; }
+      .quick input { grid-column: 1 / -1; }
     }
-    .quick input {
-      flex: 1;
+    input, select, button, textarea {
+      background: #130d45;
+      color: #fff;
       border: 1px solid var(--line);
       border-radius: 10px;
-      padding: 10px 12px;
+      padding: 10px;
       font-size: 14px;
     }
-    .quick button {
-      border: none;
-      border-radius: 10px;
-      padding: 10px 12px;
-      background: var(--text);
-      color: #fff;
-      font-weight: 600;
+    input::placeholder, textarea::placeholder { color: #aba4cb; }
+    button {
       cursor: pointer;
+      font-weight: 700;
+      background: linear-gradient(180deg, #5f3dbf, #4a2e9d);
+    }
+    button.secondary {
+      background: #1a124e;
+      color: var(--muted);
+      font-weight: 600;
     }
     .filters {
+      padding: 14px;
       display: grid;
-      grid-template-columns: 1fr 1fr;
       gap: 8px;
+      grid-template-columns: 1fr 1fr;
       align-content: start;
     }
-    .filters select, .filters input {
-      width: 100%;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      padding: 8px 10px;
-      font-size: 13px;
-      background: #fff;
-    }
-    .layout {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 12px;
-    }
-    @media (min-width: 1200px) {
-      .layout {
-        grid-template-columns: minmax(0, 1fr) 320px;
-      }
+    .layout { display: grid; gap: 12px; grid-template-columns: 1fr; }
+    @media (min-width: 1180px) {
+      .layout { grid-template-columns: minmax(0, 1fr) 330px; }
     }
     .board {
-      display: grid;
+      display: grid; gap: 12px;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
     }
     @media (min-width: 900px) {
-      .board { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .board { grid-template-columns: repeat(5, minmax(0, 1fr)); }
     }
     .col {
-      background: #fff;
       border: 1px solid var(--line);
       border-radius: 14px;
+      background: rgba(31, 22, 90, 0.85);
+      min-height: 220px;
       padding: 10px;
-      min-height: 240px;
     }
     .col-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 14px; font-weight: 800; color: #fff;
       margin-bottom: 8px;
-      font-size: 14px;
-      font-weight: 700;
     }
-    .count {
-      font-size: 12px;
-      color: var(--muted);
-      font-weight: 600;
-    }
+    .count { font-size: 12px; color: var(--muted); }
+    .dropzone { min-height: 150px; }
     .task {
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      padding: 10px 10px 8px;
+      border: 1px solid #5b4ab9;
+      border-radius: 12px;
+      background: linear-gradient(180deg, rgba(42, 30, 106, 0.95), rgba(30, 22, 84, 0.95));
+      padding: 9px;
       margin-bottom: 8px;
-      font-size: 13px;
-      background: #fff;
     }
-    .task h3 {
-      margin: 0 0 6px;
-      font-size: 14px;
-      line-height: 1.35;
-    }
-    .meta {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      margin: 6px 0 0;
-    }
+    .task.dragging { opacity: 0.6; }
+    .task h3 { margin: 0 0 6px; font-size: 14px; line-height: 1.3; color: #fff; }
+    .task p { margin: 0; color: var(--muted); font-size: 12px; }
+    .meta { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
     .badge {
-      font-size: 11px;
-      line-height: 1;
-      padding: 4px 7px;
       border-radius: 999px;
-      border: 1px solid var(--line);
-      color: var(--muted);
-      background: #f8fafc;
+      font-size: 11px;
+      border: 1px solid #5e4fc0;
+      color: #d7d0f6;
+      padding: 3px 7px;
+      background: #211760;
     }
-    .p1 { color: var(--danger); border-color: #fecaca; background: #fef2f2; }
-    .p2 { color: #b45309; border-color: #fde68a; background: #fffbeb; }
-    .today { color: var(--warn); border-color: #fde68a; background: #fffbeb; }
-    .overdue { color: var(--danger); border-color: #fecaca; background: #fef2f2; }
-    .ok { color: var(--ok); border-color: #bbf7d0; background: #f0fdf4; }
-    .muted { color: var(--muted); font-size: 12px; margin: 0; }
-    .panel h2 {
-      margin: 0 0 10px;
-      font-size: 16px;
-    }
-    .panel .section {
-      border-top: 1px solid var(--line);
-      padding-top: 10px;
-      margin-top: 10px;
-    }
-    .list {
-      margin: 0;
-      padding-left: 16px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-    .list li { margin-bottom: 6px; }
+    .p1 { color: #ffd4e0; border-color: #e57a9a; background: #4c1f38; }
+    .p2 { color: #ffe6c6; border-color: #dd9a5b; background: #4b2f1a; }
+    .due-overdue { color: #ffd4e0; border-color: #e57a9a; background: #4b1f32; }
+    .due-soon { color: #ffe6c6; border-color: #dd9a5b; background: #4f3119; }
+    .task-actions { display: flex; gap: 6px; margin-top: 8px; }
+    .task-actions button { padding: 5px 8px; font-size: 12px; }
     .empty {
-      border: 1px dashed var(--line);
+      border: 1px dashed #5e4ec0;
+      color: #b6aedf;
       border-radius: 10px;
       padding: 10px;
-      color: var(--muted);
       font-size: 12px;
     }
-    code {
-      background: #f1f5f9;
-      padding: 2px 6px;
-      border-radius: 6px;
-    }
-    a { color: var(--accent); text-decoration: none; }
+    .details { padding: 12px; }
+    .details h2 { margin: 0 0 8px; color: var(--gold); }
+    .details small { color: var(--muted); }
+    .details .block { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); }
+    .details ul { margin: 8px 0 0; padding-left: 18px; color: var(--muted); font-size: 13px; }
+    .foot-note { margin-top: 10px; font-size: 12px; color: #aea7d5; }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="topbar">
-      <div class="card">
-        <div class="brand">
-          <h1>Personal Task Tracker</h1>
+    <section class="topbar">
+      <div class="panel header">
+        <div class="title">
+          <h1>Task Tracker</h1>
           <div class="stats">
-            <span class="chip"><strong>12</strong> задач</span>
-            <span class="chip"><strong>3</strong> overdue</span>
-            <span class="chip"><strong>5</strong> today</span>
+            <span class="chip"><strong id="stat-all">0</strong> задач</span>
+            <span class="chip"><strong id="stat-overdue">0</strong> overdue</span>
+            <span class="chip"><strong id="stat-today">0</strong> today</span>
           </div>
         </div>
         <div class="quick">
-          <input type="text" value="Добавить задачу... (например: Позвонить в банк сегодня 18:00 P1)">
-          <button>Добавить</button>
+          <input id="quickTitle" placeholder="Быстро добавить задачу...">
+          <select id="quickPriority">
+            <option value="p3">P3 Normal</option>
+            <option value="p1">P1 Critical</option>
+            <option value="p2">P2 High</option>
+            <option value="p4">P4 Low</option>
+          </select>
+          <input id="quickDue" type="date">
+          <button id="addBtn">Добавить</button>
         </div>
       </div>
-      <div class="card">
-        <div class="filters">
-          <input type="search" value="Поиск: invoice">
-          <select><option>Все статусы</option></select>
-          <select><option>Все приоритеты</option></select>
-          <select><option>Срок: Today / Overdue</option></select>
-        </div>
+      <div class="panel filters">
+        <input id="search" type="search" placeholder="Поиск">
+        <select id="filterPriority">
+          <option value="">Все приоритеты</option>
+          <option value="p1">P1</option>
+          <option value="p2">P2</option>
+          <option value="p3">P3</option>
+          <option value="p4">P4</option>
+        </select>
+        <select id="filterDue">
+          <option value="">Любые сроки</option>
+          <option value="today">Today</option>
+          <option value="overdue">Overdue</option>
+        </select>
+        <button class="secondary" id="resetBtn">Сбросить фильтры</button>
       </div>
-    </div>
+    </section>
 
-    <div class="layout">
-      <div class="board">
-        <div class="col">
-          <div class="col-head"><span>Inbox</span><span class="count">2</span></div>
-          <div class="task">
-            <h3>Собрать идеи на неделю</h3>
-            <p class="muted">Быстрый capture без сортировки</p>
-            <div class="meta">
-              <span class="badge">P3</span>
-              <span class="badge">#работа</span>
-            </div>
-          </div>
-          <div class="task">
-            <h3>Проверить дедлайны по счетам</h3>
-            <div class="meta">
-              <span class="badge p2">P2</span>
-              <span class="badge overdue">Overdue</span>
-              <span class="badge">#финансы</span>
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="col-head"><span>Planned</span><span class="count">3</span></div>
-          <div class="task">
-            <h3>Запланировать задачи на завтра</h3>
-            <div class="meta">
-              <span class="badge">P3</span>
-              <span class="badge today">Today</span>
-              <span class="badge">#план</span>
-            </div>
-          </div>
-          <div class="task">
-            <h3>Подготовить документы на подачу</h3>
-            <div class="meta">
-              <span class="badge p2">P2</span>
-              <span class="badge">Tomorrow</span>
-              <span class="badge">#дом</span>
-            </div>
-          </div>
-          <div class="empty">Перетащи сюда задачу из Inbox, когда определишь приоритет и срок.</div>
-        </div>
-        <div class="col">
-          <div class="col-head"><span>In Progress</span><span class="count">2</span></div>
-          <div class="task">
-            <h3>Сделать тренировку</h3>
-            <div class="meta">
-              <span class="badge p1">P1</span>
-              <span class="badge today">Today 20:00</span>
-              <span class="badge">#здоровье</span>
-            </div>
-          </div>
-          <div class="task">
-            <h3>Подготовить резюме обновление</h3>
-            <div class="meta">
-              <span class="badge p2">P2</span>
-              <span class="badge">Friday</span>
-              <span class="badge">#карьера</span>
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="col-head"><span>Waiting</span><span class="count">1</span></div>
-          <div class="task">
-            <h3>Жду ответ по заявке на карту</h3>
-            <p class="muted">Блокер: внешний ответ от банка</p>
-            <div class="meta">
-              <span class="badge p2">P2</span>
-              <span class="badge">#ожидание</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <aside class="card panel">
+    <section class="layout">
+      <section class="board" id="board"></section>
+      <aside class="panel details" id="details">
         <h2>Детали задачи</h2>
-        <p><strong>Сделать тренировку</strong></p>
-        <p class="muted">Приоритет: P1 • Статус: In Progress • Deadline: Today 20:00</p>
-        <div class="section">
-          <p><strong>Комментарии</strong></p>
-          <ul class="list">
-            <li>Подготовить форму и план на 45 минут</li>
-            <li>После завершения зафиксировать результат</li>
-          </ul>
+        <small>Нажми на карточку, чтобы редактировать</small>
+        <div class="block">
+          <label>Название</label>
+          <input id="dTitle" placeholder="Название">
         </div>
-        <div class="section">
-          <p><strong>История</strong></p>
-          <ul class="list">
-            <li>Статус изменён: Planned → In Progress</li>
-            <li>Установлен приоритет: P1</li>
-            <li>Добавлен дедлайн: сегодня, 20:00</li>
-          </ul>
+        <div class="block">
+          <label>Описание</label>
+          <textarea id="dDesc" rows="4" placeholder="Описание"></textarea>
         </div>
-        <div class="section">
-          <p class="muted">Это публичный статический экран GitHub Pages. Полная интерактивная версия работает на Django-сервере.</p>
-          <p><code>python manage.py runserver 127.0.0.1:8000</code></p>
+        <div class="block">
+          <label>Приоритет</label>
+          <select id="dPriority">
+            <option value="p1">P1 Critical</option>
+            <option value="p2">P2 High</option>
+            <option value="p3">P3 Normal</option>
+            <option value="p4">P4 Low</option>
+          </select>
+        </div>
+        <div class="block">
+          <label>Срок</label>
+          <input id="dDue" type="date">
+        </div>
+        <div class="block">
+          <button id="saveDetails">Сохранить</button>
+          <button class="secondary" id="deleteTask">Удалить</button>
+        </div>
+        <div class="foot-note">
+          Данные сохраняются в браузере пользователя (localStorage), поэтому каждый может пользоваться сам по ссылке и вести свои задачи.
         </div>
       </aside>
-    </div>
+    </section>
   </div>
+
+  <script>
+    const STATUSES = [
+      { id: "inbox", label: "Inbox" },
+      { id: "planned", label: "Planned" },
+      { id: "in_progress", label: "In Progress" },
+      { id: "waiting", label: "Waiting" },
+      { id: "done", label: "Done" },
+    ];
+
+    const STORAGE_KEY = "ptt-pages-tasks-v2";
+    let selectedTaskId = null;
+
+    const defaultTasks = [
+      { id: crypto.randomUUID(), title: "Собрать идеи на неделю", desc: "", status: "inbox", priority: "p3", due: "", createdAt: Date.now() },
+      { id: crypto.randomUUID(), title: "Закрыть срочный платеж", desc: "", status: "planned", priority: "p1", due: dateOffset(-1), createdAt: Date.now() },
+      { id: crypto.randomUUID(), title: "Сделать тренировку", desc: "45 минут, фокус на кардио", status: "in_progress", priority: "p2", due: dateOffset(0), createdAt: Date.now() },
+      { id: crypto.randomUUID(), title: "Жду ответ от банка", desc: "", status: "waiting", priority: "p2", due: "", createdAt: Date.now() },
+    ];
+
+    function dateOffset(days) {
+      const d = new Date();
+      d.setDate(d.getDate() + days);
+      return d.toISOString().slice(0, 10);
+    }
+
+    function loadTasks() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultTasks));
+        return [...defaultTasks];
+      }
+      try {
+        return JSON.parse(raw);
+      } catch {
+        return [...defaultTasks];
+      }
+    }
+
+    function saveTasks(tasks) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+    }
+
+    function badgeDue(due) {
+      if (!due) return "";
+      const today = new Date().toISOString().slice(0, 10);
+      if (due < today) return `<span class="badge due-overdue">Overdue ${due}</span>`;
+      if (due === today) return `<span class="badge due-soon">Today ${due}</span>`;
+      return `<span class="badge">Due ${due}</span>`;
+    }
+
+    function getPriorityLabel(p) {
+      if (p === "p1") return "P1";
+      if (p === "p2") return "P2";
+      if (p === "p4") return "P4";
+      return "P3";
+    }
+
+    function render() {
+      const tasks = loadTasks();
+      const board = document.getElementById("board");
+      const search = document.getElementById("search").value.toLowerCase().trim();
+      const fp = document.getElementById("filterPriority").value;
+      const fd = document.getElementById("filterDue").value;
+      const today = new Date().toISOString().slice(0, 10);
+
+      const filtered = tasks.filter(t => {
+        if (search && !(`${t.title} ${t.desc}`.toLowerCase().includes(search))) return false;
+        if (fp && t.priority !== fp) return false;
+        if (fd === "today" && t.due !== today) return false;
+        if (fd === "overdue" && !(t.due && t.due < today)) return false;
+        return true;
+      });
+
+      board.innerHTML = STATUSES.map(s => {
+        const colTasks = filtered.filter(t => t.status === s.id);
+        return `
+          <div class="col" data-status="${s.id}">
+            <div class="col-head"><span>${s.label}</span><span class="count">${colTasks.length}</span></div>
+            <div class="dropzone" data-status="${s.id}">
+              ${colTasks.length ? colTasks.map(taskCard).join("") : `<div class="empty">Пусто. Перетащи сюда задачу или добавь новую.</div>`}
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      board.querySelectorAll(".task").forEach(el => {
+        el.addEventListener("dragstart", onDragStart);
+        el.addEventListener("dragend", onDragEnd);
+        el.addEventListener("click", () => openDetails(el.dataset.id));
+      });
+      board.querySelectorAll(".dropzone").forEach(zone => {
+        zone.addEventListener("dragover", e => e.preventDefault());
+        zone.addEventListener("drop", onDrop);
+      });
+      board.querySelectorAll(".btn-done").forEach(btn => btn.addEventListener("click", markDone));
+      board.querySelectorAll(".btn-del").forEach(btn => btn.addEventListener("click", deleteFromCard));
+
+      updateStats(tasks);
+      updateDetailsPanel();
+    }
+
+    function taskCard(t) {
+      const pClass = t.priority === "p1" ? "p1" : t.priority === "p2" ? "p2" : "";
+      return `
+        <article class="task" draggable="true" data-id="${t.id}">
+          <h3>${escapeHtml(t.title)}</h3>
+          ${t.desc ? `<p>${escapeHtml(t.desc)}</p>` : ""}
+          <div class="meta">
+            <span class="badge ${pClass}">${getPriorityLabel(t.priority)}</span>
+            ${badgeDue(t.due)}
+          </div>
+          <div class="task-actions">
+            ${t.status !== "done" ? `<button class="secondary btn-done" data-id="${t.id}">Done</button>` : ""}
+            <button class="secondary btn-del" data-id="${t.id}">Удалить</button>
+          </div>
+        </article>
+      `;
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, (m) => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;" }[m]));
+    }
+
+    function updateStats(tasks) {
+      const today = new Date().toISOString().slice(0, 10);
+      const all = tasks.filter(t => t.status !== "done").length;
+      const overdue = tasks.filter(t => t.due && t.due < today && t.status !== "done").length;
+      const tday = tasks.filter(t => t.due === today && t.status !== "done").length;
+      document.getElementById("stat-all").textContent = all;
+      document.getElementById("stat-overdue").textContent = overdue;
+      document.getElementById("stat-today").textContent = tday;
+    }
+
+    function onDragStart(e) {
+      e.dataTransfer.setData("task-id", e.currentTarget.dataset.id);
+      e.currentTarget.classList.add("dragging");
+    }
+    function onDragEnd(e) { e.currentTarget.classList.remove("dragging"); }
+    function onDrop(e) {
+      const taskId = e.dataTransfer.getData("task-id");
+      const status = e.currentTarget.dataset.status;
+      const tasks = loadTasks();
+      const task = tasks.find(t => t.id === taskId);
+      if (!task) return;
+      task.status = status;
+      saveTasks(tasks);
+      render();
+    }
+
+    function markDone(e) {
+      e.stopPropagation();
+      const id = e.currentTarget.dataset.id;
+      const tasks = loadTasks();
+      const t = tasks.find(x => x.id === id);
+      if (!t) return;
+      t.status = "done";
+      saveTasks(tasks);
+      render();
+    }
+
+    function deleteFromCard(e) {
+      e.stopPropagation();
+      const id = e.currentTarget.dataset.id;
+      const tasks = loadTasks().filter(t => t.id !== id);
+      if (selectedTaskId === id) selectedTaskId = null;
+      saveTasks(tasks);
+      render();
+    }
+
+    function openDetails(id) {
+      selectedTaskId = id;
+      updateDetailsPanel();
+    }
+
+    function updateDetailsPanel() {
+      const tasks = loadTasks();
+      const t = tasks.find(x => x.id === selectedTaskId);
+      const title = document.getElementById("dTitle");
+      const desc = document.getElementById("dDesc");
+      const priority = document.getElementById("dPriority");
+      const due = document.getElementById("dDue");
+      if (!t) {
+        title.value = "";
+        desc.value = "";
+        priority.value = "p3";
+        due.value = "";
+        return;
+      }
+      title.value = t.title || "";
+      desc.value = t.desc || "";
+      priority.value = t.priority || "p3";
+      due.value = t.due || "";
+    }
+
+    function addTask() {
+      const titleInput = document.getElementById("quickTitle");
+      const pInput = document.getElementById("quickPriority");
+      const dInput = document.getElementById("quickDue");
+      const title = titleInput.value.trim();
+      if (!title) return;
+      const tasks = loadTasks();
+      tasks.unshift({
+        id: crypto.randomUUID(),
+        title,
+        desc: "",
+        status: "inbox",
+        priority: pInput.value || "p3",
+        due: dInput.value || "",
+        createdAt: Date.now(),
+      });
+      saveTasks(tasks);
+      titleInput.value = "";
+      dInput.value = "";
+      render();
+    }
+
+    function saveDetails() {
+      if (!selectedTaskId) return;
+      const tasks = loadTasks();
+      const t = tasks.find(x => x.id === selectedTaskId);
+      if (!t) return;
+      t.title = document.getElementById("dTitle").value.trim() || t.title;
+      t.desc = document.getElementById("dDesc").value.trim();
+      t.priority = document.getElementById("dPriority").value;
+      t.due = document.getElementById("dDue").value;
+      saveTasks(tasks);
+      render();
+    }
+
+    function deleteDetails() {
+      if (!selectedTaskId) return;
+      const tasks = loadTasks().filter(t => t.id !== selectedTaskId);
+      selectedTaskId = null;
+      saveTasks(tasks);
+      render();
+    }
+
+    document.getElementById("addBtn").addEventListener("click", addTask);
+    document.getElementById("quickTitle").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") addTask();
+    });
+    document.getElementById("saveDetails").addEventListener("click", saveDetails);
+    document.getElementById("deleteTask").addEventListener("click", deleteDetails);
+    document.getElementById("search").addEventListener("input", render);
+    document.getElementById("filterPriority").addEventListener("change", render);
+    document.getElementById("filterDue").addEventListener("change", render);
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      document.getElementById("search").value = "";
+      document.getElementById("filterPriority").value = "";
+      document.getElementById("filterDue").value = "";
+      render();
+    });
+
+    render();
+  </script>
 </body>
 </html>
 

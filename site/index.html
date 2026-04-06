@@ -3,15 +3,18 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Personal Task Tracker - Public Preview</title>
+  <title>Personal Task Tracker</title>
   <style>
     :root {
-      --bg: #f8fafc;
+      --bg: #f1f5f9;
       --card: #ffffff;
       --text: #0f172a;
       --muted: #64748b;
-      --accent: #0f172a;
+      --accent: #2563eb;
       --line: #e2e8f0;
+      --ok: #16a34a;
+      --warn: #ca8a04;
+      --danger: #dc2626;
     }
     * { box-sizing: border-box; }
     body {
@@ -22,19 +25,95 @@
       line-height: 1.5;
     }
     .wrap {
-      max-width: 960px;
+      max-width: 1400px;
       margin: 0 auto;
-      padding: 24px 16px 48px;
+      padding: 16px;
     }
     .card {
       background: var(--card);
       border: 1px solid var(--line);
       border-radius: 14px;
-      padding: 16px;
-      margin-bottom: 14px;
+      padding: 12px;
     }
-    h1, h2 { margin: 0 0 10px; }
-    p { margin: 0 0 10px; color: var(--muted); }
+    .topbar {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    @media (min-width: 1000px) {
+      .topbar { grid-template-columns: 1.5fr 1fr; }
+    }
+    .brand {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .brand h1 {
+      margin: 0;
+      font-size: 20px;
+    }
+    .stats {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .chip {
+      font-size: 12px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--muted);
+    }
+    .chip strong { color: var(--text); }
+    .quick {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .quick input {
+      flex: 1;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 14px;
+    }
+    .quick button {
+      border: none;
+      border-radius: 10px;
+      padding: 10px 12px;
+      background: var(--text);
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .filters {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      align-content: start;
+    }
+    .filters select, .filters input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-size: 13px;
+      background: #fff;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    @media (min-width: 1200px) {
+      .layout {
+        grid-template-columns: minmax(0, 1fr) 320px;
+      }
+    }
     .board {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -43,59 +122,215 @@
     @media (min-width: 900px) {
       .board { grid-template-columns: repeat(4, minmax(0, 1fr)); }
     }
-    .col h3 { margin: 0 0 10px; font-size: 14px; }
+    .col {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 10px;
+      min-height: 240px;
+    }
+    .col-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .count {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 600;
+    }
     .task {
       border: 1px solid var(--line);
       border-radius: 10px;
-      padding: 10px;
+      padding: 10px 10px 8px;
       margin-bottom: 8px;
-      font-size: 14px;
+      font-size: 13px;
       background: #fff;
     }
-    .muted { color: var(--muted); font-size: 13px; }
+    .task h3 {
+      margin: 0 0 6px;
+      font-size: 14px;
+      line-height: 1.35;
+    }
+    .meta {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin: 6px 0 0;
+    }
+    .badge {
+      font-size: 11px;
+      line-height: 1;
+      padding: 4px 7px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      background: #f8fafc;
+    }
+    .p1 { color: var(--danger); border-color: #fecaca; background: #fef2f2; }
+    .p2 { color: #b45309; border-color: #fde68a; background: #fffbeb; }
+    .today { color: var(--warn); border-color: #fde68a; background: #fffbeb; }
+    .overdue { color: var(--danger); border-color: #fecaca; background: #fef2f2; }
+    .ok { color: var(--ok); border-color: #bbf7d0; background: #f0fdf4; }
+    .muted { color: var(--muted); font-size: 12px; margin: 0; }
+    .panel h2 {
+      margin: 0 0 10px;
+      font-size: 16px;
+    }
+    .panel .section {
+      border-top: 1px solid var(--line);
+      padding-top: 10px;
+      margin-top: 10px;
+    }
+    .list {
+      margin: 0;
+      padding-left: 16px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .list li { margin-bottom: 6px; }
+    .empty {
+      border: 1px dashed var(--line);
+      border-radius: 10px;
+      padding: 10px;
+      color: var(--muted);
+      font-size: 12px;
+    }
     code {
       background: #f1f5f9;
       padding: 2px 6px;
       border-radius: 6px;
     }
-    a { color: var(--accent); }
+    a { color: var(--accent); text-decoration: none; }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="card">
-      <h1>Personal Task Tracker</h1>
-      <p>Публичный preview проекта на GitHub Pages.</p>
-      <p>Важно: GitHub Pages поддерживает только статический контент. Полная Django-версия (CRUD, reminders, history) запускается на сервере.</p>
-    </div>
-
-    <div class="card">
-      <h2>Preview интерфейса</h2>
-      <div class="board">
-        <div class="col card">
-          <h3>Inbox</h3>
-          <div class="task">Собрать идеи на неделю</div>
-          <div class="task">Проверить дедлайны</div>
+    <div class="topbar">
+      <div class="card">
+        <div class="brand">
+          <h1>Personal Task Tracker</h1>
+          <div class="stats">
+            <span class="chip"><strong>12</strong> задач</span>
+            <span class="chip"><strong>3</strong> overdue</span>
+            <span class="chip"><strong>5</strong> today</span>
+          </div>
         </div>
-        <div class="col card">
-          <h3>Planned</h3>
-          <div class="task">Запланировать задачи на завтра</div>
+        <div class="quick">
+          <input type="text" value="Добавить задачу... (например: Позвонить в банк сегодня 18:00 P1)">
+          <button>Добавить</button>
         </div>
-        <div class="col card">
-          <h3>In Progress</h3>
-          <div class="task">Сделать тренировку<br><span class="muted">P1, Today</span></div>
-        </div>
-        <div class="col card">
-          <h3>Waiting</h3>
-          <div class="task">Жду ответ по заявке<br><span class="muted">P2</span></div>
+      </div>
+      <div class="card">
+        <div class="filters">
+          <input type="search" value="Поиск: invoice">
+          <select><option>Все статусы</option></select>
+          <select><option>Все приоритеты</option></select>
+          <select><option>Срок: Today / Overdue</option></select>
         </div>
       </div>
     </div>
 
-    <div class="card">
-      <h2>Как запустить полную версию локально</h2>
-      <p><code>python manage.py runserver 127.0.0.1:8000</code></p>
-      <p>Репозиторий: <a href="https://github.com/buzanovnikita30-hash/personal-task-tracker">github.com/buzanovnikita30-hash/personal-task-tracker</a></p>
+    <div class="layout">
+      <div class="board">
+        <div class="col">
+          <div class="col-head"><span>Inbox</span><span class="count">2</span></div>
+          <div class="task">
+            <h3>Собрать идеи на неделю</h3>
+            <p class="muted">Быстрый capture без сортировки</p>
+            <div class="meta">
+              <span class="badge">P3</span>
+              <span class="badge">#работа</span>
+            </div>
+          </div>
+          <div class="task">
+            <h3>Проверить дедлайны по счетам</h3>
+            <div class="meta">
+              <span class="badge p2">P2</span>
+              <span class="badge overdue">Overdue</span>
+              <span class="badge">#финансы</span>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="col-head"><span>Planned</span><span class="count">3</span></div>
+          <div class="task">
+            <h3>Запланировать задачи на завтра</h3>
+            <div class="meta">
+              <span class="badge">P3</span>
+              <span class="badge today">Today</span>
+              <span class="badge">#план</span>
+            </div>
+          </div>
+          <div class="task">
+            <h3>Подготовить документы на подачу</h3>
+            <div class="meta">
+              <span class="badge p2">P2</span>
+              <span class="badge">Tomorrow</span>
+              <span class="badge">#дом</span>
+            </div>
+          </div>
+          <div class="empty">Перетащи сюда задачу из Inbox, когда определишь приоритет и срок.</div>
+        </div>
+        <div class="col">
+          <div class="col-head"><span>In Progress</span><span class="count">2</span></div>
+          <div class="task">
+            <h3>Сделать тренировку</h3>
+            <div class="meta">
+              <span class="badge p1">P1</span>
+              <span class="badge today">Today 20:00</span>
+              <span class="badge">#здоровье</span>
+            </div>
+          </div>
+          <div class="task">
+            <h3>Подготовить резюме обновление</h3>
+            <div class="meta">
+              <span class="badge p2">P2</span>
+              <span class="badge">Friday</span>
+              <span class="badge">#карьера</span>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="col-head"><span>Waiting</span><span class="count">1</span></div>
+          <div class="task">
+            <h3>Жду ответ по заявке на карту</h3>
+            <p class="muted">Блокер: внешний ответ от банка</p>
+            <div class="meta">
+              <span class="badge p2">P2</span>
+              <span class="badge">#ожидание</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="card panel">
+        <h2>Детали задачи</h2>
+        <p><strong>Сделать тренировку</strong></p>
+        <p class="muted">Приоритет: P1 • Статус: In Progress • Deadline: Today 20:00</p>
+        <div class="section">
+          <p><strong>Комментарии</strong></p>
+          <ul class="list">
+            <li>Подготовить форму и план на 45 минут</li>
+            <li>После завершения зафиксировать результат</li>
+          </ul>
+        </div>
+        <div class="section">
+          <p><strong>История</strong></p>
+          <ul class="list">
+            <li>Статус изменён: Planned → In Progress</li>
+            <li>Установлен приоритет: P1</li>
+            <li>Добавлен дедлайн: сегодня, 20:00</li>
+          </ul>
+        </div>
+        <div class="section">
+          <p class="muted">Это публичный статический экран GitHub Pages. Полная интерактивная версия работает на Django-сервере.</p>
+          <p><code>python manage.py runserver 127.0.0.1:8000</code></p>
+        </div>
+      </aside>
     </div>
   </div>
 </body>

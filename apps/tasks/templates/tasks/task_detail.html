@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block content %}
+<main class="mx-auto max-w-4xl p-3 md:p-6">
+  <a href="{% url 'tasks:board' %}" class="mb-4 inline-block text-sm text-slate-500">← Назад к доске</a>
+  <div class="grid gap-4 md:grid-cols-3">
+    <section class="rounded-2xl bg-white p-4 shadow-sm md:col-span-2">
+      <h1 class="mb-3 text-xl font-semibold">{{ task.title }}</h1>
+      <form method="post" action="{% url 'tasks:task_update' task.id %}" class="space-y-3">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="flex gap-2">
+          <button class="rounded-lg bg-slate-900 px-4 py-2 text-white">Сохранить</button>
+        </div>
+      </form>
+      <form method="post" action="{% url 'tasks:task_archive' task.id %}" class="mt-2">
+        {% csrf_token %}
+        <button class="rounded-lg border px-3 py-1 text-sm text-slate-600">Архивировать</button>
+      </form>
+    </section>
+
+    <aside class="space-y-4">
+      <section class="rounded-2xl bg-white p-4 shadow-sm">
+        <h2 class="mb-2 font-semibold">Комментарии</h2>
+        <form method="post" action="{% url 'tasks:add_comment' task.id %}" class="mb-3">
+          {% csrf_token %}
+          {{ comment_form.body }}
+          <button class="mt-2 rounded-lg bg-slate-900 px-3 py-1 text-white">Добавить</button>
+        </form>
+        <div class="space-y-2">
+          {% for c in task.comments.all %}
+            <div class="rounded-lg bg-slate-50 p-2 text-sm">
+              <div>{{ c.body }}</div>
+              <div class="text-xs text-slate-400">{{ c.created_at }}</div>
+            </div>
+          {% empty %}
+            <div class="text-sm text-slate-400">Комментариев пока нет.</div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <section class="rounded-2xl bg-white p-4 shadow-sm">
+        <h2 class="mb-2 font-semibold">Напоминания</h2>
+        <form method="post" action="{% url 'tasks:add_reminder' task.id %}">
+          {% csrf_token %}
+          {{ reminder_form.remind_at }}
+          <button class="mt-2 rounded-lg bg-slate-900 px-3 py-1 text-white">Поставить</button>
+        </form>
+      </section>
+
+      <section class="rounded-2xl bg-white p-4 shadow-sm">
+        <h2 class="mb-2 font-semibold">История</h2>
+        <div class="space-y-2 text-sm">
+          {% for e in task.activity.all %}
+            <div class="rounded-lg bg-slate-50 p-2">
+              <div class="font-medium">{{ e.action_label }}</div>
+              {% if e.field_name %}<div>{{ e.field_label }}: {{ e.old_value_label }} → {{ e.new_value_label }}</div>{% endif %}
+              <div class="text-xs text-slate-400">{{ e.created_at }}</div>
+            </div>
+          {% empty %}
+            <div class="text-slate-400">Изменений пока нет.</div>
+          {% endfor %}
+        </div>
+      </section>
+    </aside>
+  </div>
+</main>
+{% endblock %}
+

@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block content %}
+<main class="mx-auto max-w-7xl p-3 md:p-6" x-data="{detailOpen:false}">
+  <header class="mb-4">
+    <h1 class="text-2xl font-semibold">Мои задачи</h1>
+    <p class="text-sm text-slate-500">Самый простой серьёзный task manager для ежедневного фокуса.</p>
+  </header>
+
+  <section class="mb-4 rounded-2xl bg-white p-3 shadow-sm">
+    <form method="post" action="{% url 'tasks:quick_add' %}">
+      {% csrf_token %}
+      {{ quick_form.title }}
+    </form>
+  </section>
+
+  <section class="mb-4 rounded-2xl bg-white p-3 shadow-sm">
+    <form class="grid gap-2 md:grid-cols-6">
+      <input name="q" placeholder="Поиск..." value="{{ request.GET.q }}" class="rounded-lg border p-2"/>
+      <select name="status" class="rounded-lg border p-2">
+        <option value="">Все статусы</option>
+        {% for s, label in statuses.choices %}
+          <option value="{{ s }}" {% if request.GET.status == s %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+      <select name="priority" class="rounded-lg border p-2">
+        <option value="">Все приоритеты</option>
+        <option value="p1">P1</option><option value="p2">P2</option><option value="p3">P3</option><option value="p4">P4</option>
+      </select>
+      <select name="due" class="rounded-lg border p-2">
+        <option value="">Все сроки</option>
+        <option value="today" {% if request.GET.due == "today" %}selected{% endif %}>Сегодня</option>
+        <option value="overdue" {% if request.GET.due == "overdue" %}selected{% endif %}>Просрочено</option>
+      </select>
+      <select name="tag" class="rounded-lg border p-2">
+        <option value="">Все теги</option>
+        {% for t in tags %}
+          <option value="{{ t.id }}" {% if request.GET.tag == t.id|stringformat:"s" %}selected{% endif %}>{{ t.name }}</option>
+        {% endfor %}
+      </select>
+      <div class="flex gap-2">
+        <button class="w-full rounded-lg bg-slate-900 px-4 py-2 text-white">Применить</button>
+        <a href="{% url 'tasks:board' %}" class="rounded-lg border px-4 py-2 text-center text-slate-600">Сброс</a>
+      </div>
+    </form>
+  </section>
+
+  <section class="grid gap-3 overflow-x-auto md:grid-cols-4">
+    {% for status, items in columns.items %}
+      <div class="min-w-[280px] rounded-2xl bg-white p-3 shadow-sm">
+        <div class="mb-3 flex items-center justify-between">
+          <h2 class="font-semibold">{{ status.label }}</h2>
+          <span class="text-xs text-slate-500">{{ items|length }}</span>
+        </div>
+        <div class="task-column min-h-[120px] space-y-2" data-status="{{ status }}">
+          {% for task in items %}
+            <article class="task-card cursor-grab rounded-xl border border-slate-200 bg-white p-3" data-task-id="{{ task.id }}" data-position="{{ task.board_position }}">
+              <a href="{% url 'tasks:task_detail' task.id %}" class="block">
+                <h3 class="mb-2 text-sm font-medium">{{ task.title }}</h3>
+                <div class="flex flex-wrap gap-1 text-xs">
+                  <span class="rounded-full bg-slate-100 px-2 py-1">{{ task.get_priority_display }}</span>
+                  {% if task.due_date %}
+                  <span class="rounded-full px-2 py-1 {% if task.is_overdue %}bg-red-100 text-red-700{% elif task.is_today %}bg-amber-100 text-amber-800{% else %}bg-slate-100{% endif %}">
+                    {{ task.due_date }}
+                  </span>
+                  {% endif %}
+                </div>
+              </a>
+            </article>
+          {% empty %}
+            <div class="rounded-xl border border-dashed p-3 text-sm text-slate-400">Пока пусто. Добавьте задачу сверху.</div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+  </section>
+
+  <footer class="mt-4 text-sm text-slate-500">Колонка «Готово» скрыта с доски: выполнено {{ done_count }} задач.</footer>
+</main>
+{% endblock %}
+

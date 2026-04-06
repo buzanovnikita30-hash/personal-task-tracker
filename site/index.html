@@ -6,23 +6,23 @@
   <title>Task Tracker</title>
   <style>
     :root {
-      --bg: #100a3b;
-      --bg2: #1d0f56;
-      --card: #1b1450;
-      --card2: #281e6a;
-      --text: #f7f1ff;
-      --muted: #c8c1e6;
-      --line: #3f338d;
-      --gold: #f0b668;
-      --gold-soft: #3f2b1a;
-      --danger: #ff7f9f;
-      --ok: #64e59d;
+      --bg: #0d1b2a;
+      --bg2: #1b263b;
+      --card: #1f334d;
+      --card2: #243b55;
+      --text: #f0f4f8;
+      --muted: #b8c7d6;
+      --line: #3f5c78;
+      --gold: #d8b26e;
+      --gold-soft: #3f3422;
+      --danger: #ff8f98;
+      --ok: #73d8a4;
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-      background: radial-gradient(circle at 20% 0%, #1e1262 0%, var(--bg) 55%) fixed;
+      background: radial-gradient(circle at 20% 0%, #1a3350 0%, var(--bg) 55%) fixed;
       color: var(--text);
     }
     .wrap { max-width: 1400px; margin: 0 auto; padding: 16px; }
@@ -49,7 +49,7 @@
     .stats { display: flex; gap: 8px; flex-wrap: wrap; }
     .chip {
       border: 1px solid var(--line);
-      background: rgba(18, 12, 62, 0.8);
+      background: rgba(14, 28, 46, 0.8);
       color: var(--muted);
       border-radius: 999px;
       padding: 5px 10px;
@@ -62,7 +62,7 @@
       .quick input { grid-column: 1 / -1; }
     }
     input, select, button, textarea {
-      background: #130d45;
+      background: #15283f;
       color: #fff;
       border: 1px solid var(--line);
       border-radius: 10px;
@@ -73,10 +73,10 @@
     button {
       cursor: pointer;
       font-weight: 700;
-      background: linear-gradient(180deg, #5f3dbf, #4a2e9d);
+      background: linear-gradient(180deg, #496d94, #35506e);
     }
     button.secondary {
-      background: #1a124e;
+      background: #15283f;
       color: var(--muted);
       font-weight: 600;
     }
@@ -101,7 +101,7 @@
     .col {
       border: 1px solid var(--line);
       border-radius: 14px;
-      background: rgba(31, 22, 90, 0.85);
+      background: rgba(22, 40, 61, 0.9);
       min-height: 220px;
       padding: 10px;
     }
@@ -113,9 +113,9 @@
     .count { font-size: 12px; color: var(--muted); }
     .dropzone { min-height: 150px; }
     .task {
-      border: 1px solid #5b4ab9;
+      border: 1px solid #4f6f8f;
       border-radius: 12px;
-      background: linear-gradient(180deg, rgba(42, 30, 106, 0.95), rgba(30, 22, 84, 0.95));
+      background: linear-gradient(180deg, rgba(37, 60, 88, 0.95), rgba(27, 45, 67, 0.95));
       padding: 9px;
       margin-bottom: 8px;
       transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
@@ -123,7 +123,7 @@
     }
     .task:hover {
       transform: translateY(-2px);
-      border-color: #836ceb;
+      border-color: #79a4cb;
       box-shadow: 0 10px 18px rgba(0, 0, 0, 0.2);
     }
     .task.dragging { opacity: 0.6; }
@@ -133,20 +133,20 @@
     .badge {
       border-radius: 999px;
       font-size: 11px;
-      border: 1px solid #5e4fc0;
-      color: #d7d0f6;
+      border: 1px solid #5d7fa2;
+      color: #d3e2f2;
       padding: 3px 7px;
-      background: #211760;
+      background: #18304a;
     }
     .p1 { color: #ffd4e0; border-color: #e57a9a; background: #4c1f38; }
-    .p2 { color: #ffe6c6; border-color: #dd9a5b; background: #4b2f1a; }
-    .due-overdue { color: #ffd4e0; border-color: #e57a9a; background: #4b1f32; }
-    .due-soon { color: #ffe6c6; border-color: #dd9a5b; background: #4f3119; }
+    .p2 { color: #ffe6c6; border-color: #dd9a5b; background: #4b3d1a; }
+    .due-overdue { color: #ffd4e0; border-color: #e57a9a; background: #4b2b32; }
+    .due-soon { color: #ffe6c6; border-color: #dd9a5b; background: #4f4419; }
     .task-actions { display: flex; gap: 6px; margin-top: 8px; }
     .task-actions button { padding: 5px 8px; font-size: 12px; }
     .empty {
-      border: 1px dashed #5e4ec0;
-      color: #b6aedf;
+      border: 1px dashed #5b7896;
+      color: #b6c8d8;
       border-radius: 10px;
       padding: 10px;
       font-size: 12px;
@@ -176,18 +176,19 @@
     .success-pop.show { opacity: 1; }
     .mascot-wrap {
       position: fixed;
-      right: 16px;
-      bottom: 16px;
+      right: 10px;
+      bottom: 8px;
       z-index: 50;
       display: flex;
       align-items: flex-end;
       gap: 8px;
+      animation: mascotSlideIn 650ms cubic-bezier(.22,.77,.34,1);
     }
     .mascot-bubble {
       max-width: 260px;
-      background: linear-gradient(180deg, #3a2788, #2a1d65);
-      border: 1px solid #715adb;
-      color: #efe8ff;
+      background: linear-gradient(180deg, #2a425f, #1e334c);
+      border: 1px solid #6f90b4;
+      color: #e8f1ff;
       border-radius: 12px;
       padding: 10px;
       font-size: 13px;
@@ -196,36 +197,84 @@
       animation: bubbleIn 240ms ease;
     }
     .mascot {
-      width: 58px;
-      height: 58px;
-      border-radius: 50%;
-      border: 2px solid #7a66dc;
-      background: radial-gradient(circle at 30% 30%, #f4c47f 0%, #c68e52 35%, #6f4a23 100%);
+      width: 92px;
+      height: 140px;
+      border-radius: 28px 28px 18px 18px;
+      border: 2px solid #6d8ead;
+      background: linear-gradient(180deg, #2a425e 0%, #233750 58%, #1a2a3e 100%);
       position: relative;
       box-shadow: 0 10px 20px rgba(0, 0, 0, 0.28);
       cursor: pointer;
       animation: floatY 2.8s ease-in-out infinite;
+      overflow: hidden;
     }
-    .mascot:before, .mascot:after {
+    .mascot:before {
       content: "";
       position: absolute;
-      top: 20px;
+      left: 50%;
+      top: 10px;
+      width: 54px;
+      height: 54px;
+      transform: translateX(-50%);
+      border-radius: 50%;
+      border: 2px solid #6d8ead;
+      background: radial-gradient(circle at 30% 30%, #f2c78c 0%, #cf9f64 40%, #805832 100%);
+    }
+    .mascot .eye, .mascot .eye-r {
+      content: "";
+      position: absolute;
+      top: 34px;
       width: 8px;
       height: 8px;
       border-radius: 50%;
       background: #2d1a0c;
     }
-    .mascot:before { left: 16px; }
-    .mascot:after { right: 16px; }
+    .mascot .eye { left: 31px; }
+    .mascot .eye-r { right: 31px; }
     .mascot-mouth {
       position: absolute;
       left: 50%;
-      bottom: 13px;
+      top: 50px;
       width: 18px;
       height: 10px;
       transform: translateX(-50%);
       border-bottom: 3px solid #2d1a0c;
       border-radius: 0 0 12px 12px;
+    }
+    .mascot-body {
+      position: absolute;
+      left: 50%;
+      top: 72px;
+      transform: translateX(-50%);
+      width: 64px;
+      height: 56px;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #324d70, #243a56);
+      border: 1px solid #6a89aa;
+    }
+    .mascot-tie {
+      position: absolute;
+      left: 50%;
+      top: 78px;
+      transform: translateX(-50%);
+      width: 10px;
+      height: 30px;
+      background: linear-gradient(180deg, #d8b26e, #b68943);
+      clip-path: polygon(50% 0, 100% 18%, 72% 100%, 28% 100%, 0 18%);
+    }
+    .desk-items {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+    .desk-item {
+      font-size: 12px;
+      border: 1px solid var(--line);
+      background: rgba(19, 34, 52, 0.9);
+      color: #dce8f4;
+      border-radius: 999px;
+      padding: 4px 8px;
     }
     @keyframes fadeInUp {
       from { opacity: 0; transform: translateY(6px); }
@@ -238,6 +287,10 @@
     @keyframes floatY {
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-5px); }
+    }
+    @keyframes mascotSlideIn {
+      from { opacity: 0; transform: translateX(110px); }
+      to { opacity: 1; transform: translateX(0); }
     }
   </style>
 </head>
@@ -263,6 +316,12 @@
           </select>
           <input id="quickDue" type="date">
           <button id="addBtn">Добавить</button>
+        </div>
+        <div class="desk-items">
+          <span class="desk-item">💼 Портфель</span>
+          <span class="desk-item">📅 Календарь</span>
+          <span class="desk-item">📈 KPI</span>
+          <span class="desk-item">🧾 Отчеты</span>
         </div>
       </div>
       <div class="panel filters">
@@ -323,7 +382,11 @@
   <div class="mascot-wrap">
     <div class="mascot-bubble" id="mascotBubble">Привет! Я помогу не пропустить сроки.</div>
     <button class="mascot" id="mascotBtn" aria-label="Совет дня">
+      <span class="eye"></span>
+      <span class="eye-r"></span>
       <span class="mascot-mouth"></span>
+      <span class="mascot-body"></span>
+      <span class="mascot-tie"></span>
     </button>
   </div>
 

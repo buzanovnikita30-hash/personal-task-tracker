@@ -131,3 +131,10 @@ It marks due reminders as sent and logs activity. In production, execute every m
 python manage.py test
 ```
 
+## GitHub Pages (static preview)
+
+Workflow file: `.github/workflows/deploy.yml`
+
+- GitHub Pages publishes the `site/` folder.
+- This is a static preview only (full Django backend does not run on Pages).
+

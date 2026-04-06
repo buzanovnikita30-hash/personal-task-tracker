@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Personal Task Tracker - Public Preview</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --accent: #0f172a;
+      --line: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+    .wrap {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 24px 16px 48px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+    h1, h2 { margin: 0 0 10px; }
+    p { margin: 0 0 10px; color: var(--muted); }
+    .board {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    @media (min-width: 900px) {
+      .board { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
+    .col h3 { margin: 0 0 10px; font-size: 14px; }
+    .task {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 8px;
+      font-size: 14px;
+      background: #fff;
+    }
+    .muted { color: var(--muted); font-size: 13px; }
+    code {
+      background: #f1f5f9;
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+    a { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Personal Task Tracker</h1>
+      <p>Публичный preview проекта на GitHub Pages.</p>
+      <p>Важно: GitHub Pages поддерживает только статический контент. Полная Django-версия (CRUD, reminders, history) запускается на сервере.</p>
+    </div>
+
+    <div class="card">
+      <h2>Preview интерфейса</h2>
+      <div class="board">
+        <div class="col card">
+          <h3>Inbox</h3>
+          <div class="task">Собрать идеи на неделю</div>
+          <div class="task">Проверить дедлайны</div>
+        </div>
+        <div class="col card">
+          <h3>Planned</h3>
+          <div class="task">Запланировать задачи на завтра</div>
+        </div>
+        <div class="col card">
+          <h3>In Progress</h3>
+          <div class="task">Сделать тренировку<br><span class="muted">P1, Today</span></div>
+        </div>
+        <div class="col card">
+          <h3>Waiting</h3>
+          <div class="task">Жду ответ по заявке<br><span class="muted">P2</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Как запустить полную версию локально</h2>
+      <p><code>python manage.py runserver 127.0.0.1:8000</code></p>
+      <p>Репозиторий: <a href="https://github.com/buzanovnikita30-hash/personal-task-tracker">github.com/buzanovnikita30-hash/personal-task-tracker</a></p>
+    </div>
+  </div>
+</body>
+</html>
+
